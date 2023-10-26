@@ -27,11 +27,6 @@ def footry():
     return None
 
 
-router.get('/t2grr')
-def foooo():
-    return "stringiii"
-
-
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def add_staff(staff_person : staff_schema , session: AsyncSession = Depends(get_async_session)):
     st = staff(
