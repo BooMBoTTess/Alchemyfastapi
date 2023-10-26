@@ -25,7 +25,10 @@ async def get_staff(dep: int = 1,
 @router.get('/try_github') 
 def footry():
     return None
-g
+
+router.get('/t2grr')
+def foooo():
+    return None
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def add_staff(staff_person : staff_schema , session: AsyncSession = Depends(get_async_session)):
