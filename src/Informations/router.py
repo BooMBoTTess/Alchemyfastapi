@@ -26,7 +26,7 @@ async def get_staff(dep: int = 1,
 def footry():
     return None
 
-
+"""OCHEN VAGNAYA STROKA"""
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def add_staff(staff_person : staff_schema , session: AsyncSession = Depends(get_async_session)):
     st = staff(
