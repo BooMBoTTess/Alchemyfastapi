@@ -2,8 +2,8 @@
 I wanna cry
 I wanna die)
 
-#Полезные комманды
-uvicorn main:app --reload
-alembic init migrations
-alembic revision --autogenerate -m "TEXT"
-alembic upgrade head
+# Полезные комманды
+uvicorn main:app --reload <br>
+alembic init migrations<br>
+alembic revision --autogenerate -m "TEXT"<br>
+alembic upgrade head<br>
