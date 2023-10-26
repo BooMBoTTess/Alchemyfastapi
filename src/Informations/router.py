@@ -9,7 +9,7 @@ from src.Informations.schemas import staff_schema
 router = APIRouter(
     prefix='/info',
     tags=['database']
-)
+)git 
 
 # https://habr.com/ru/articles/513328/
 @router.get('/',
