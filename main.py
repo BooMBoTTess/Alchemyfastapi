@@ -1,16 +1,21 @@
-# This is a sample Python script.
+from fastapi import FastAPI
+from fastapi_users import FastAPIUsers
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from src.authentication.auth import auth_backend
+from src.authentication.schemas import UserRead, UserCreate
+from src.authentication.user_manager import fastapi_users
 
+from src.authentication.router import router as user_router
+from src.Informations.router import router as info_router
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+app = FastAPI(
+    title='Training application'
+)
 
+app.include_router(user_router)
+app.include_router(info_router)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.get('/')
+def uuu(num):
+    return 'Я не мертв, я живой, муррр'
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
