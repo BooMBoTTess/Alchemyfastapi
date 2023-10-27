@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import JSONResponse, HTMLResponse
+
 from database.database import get_async_session
 from database.models import staff, department, post
 from src.Informations.schemas import staff_schema
@@ -10,11 +12,12 @@ router = APIRouter(
     prefix='/info',
     tags=['database']
 )
-@router.get('/',
-           # response_model=list[staff_schema]
-            )
-async def get_all_staff(session: AsyncSession = Depends(get_async_session)):
 
+
+@router.get('/',
+            # response_model=list[staff_schema]
+            )
+async def get_dep_post(session: AsyncSession = Depends(get_async_session)):
     query = select(department)
     result = await session.execute(query)
     departments = result.scalars().all()
@@ -26,30 +29,39 @@ async def get_all_staff(session: AsyncSession = Depends(get_async_session)):
                 {post_elem.id: post_elem.name for post_elem in posts}]
 
     return dep_post
-@router.get('/{department_path}/{post_path}',
-            response_model=list[staff_schema]
+
+
+@router.get('/{department_path}',
+            # response_model=list[staff_schema]
             )
-async def get_staff(department_path: int, post_path: int = None,
-                              session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
-
-    query = select(staff)
+async def get_staff(department_path: int, request: Request,
+                    session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
+    print('req', request.headers)
+    query = ((select(staff.full_name, department.name, post.name)
+              .join(department).filter(staff.fk_department_id == department.id)
+              .join(post).filter(staff.fk_post_id == post.id))
+             .where(department.id == department_path)
+             .order_by(department.id).order_by(post.id))
     result = await session.execute(query)
-    staff_elem = result.scalars().all()
-    responce = [staff_elem[i] for i in range(len(staff_elem))]
-    print(responce)
+    json_staff = []
+    for r in result.all():
+        json_staff.append({r[0]: [r[1], r[2]]})
 
-    return responce  
+    jsresponse = JSONResponse(content=json_staff)
+    jsresponse.status_code = 202
+
+    return jsresponse
 
 
 # https://habr.com/ru/articles/513328/
 @router.get('/test'
-            #response_model=list[staff_schema],
+            # response_model=list[staff_schema],
             )  # ЭТА ХУЙНЯ НУЖНА ЧТОБЫ ОН ПОНЯЛ КАК ОТПРАВИТЬ
 async def get_staff_test(department_path: int, post_path: int,
-                              session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
+                         session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
     query = select(staff)  # НАШ ЗАПРОС
     print(query)
-    result = await session.execute(query)# ДОЛЖНО БЫТЬ С АВАЙТОМ ПОТОМУ ЧТО У НАС АСИНХРОННОЕ ГОВНО
+    result = await session.execute(query)  # ДОЛЖНО БЫТЬ С АВАЙТОМ ПОТОМУ ЧТО У НАС АСИНХРОННОЕ ГОВНО
     rows = result.scalars().all()
     print(1, rows)
     result = await session.execute(query)
@@ -63,13 +75,15 @@ async def get_staff_test(department_path: int, post_path: int,
     return 11  # ВЕРНЕТ ВСЕ СТРОКИ, БЕЗ ВЕРХНЕЙ ХУЙНИ ВЫДАСТ ОШИБКУ
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED)
-def add_staff(staff_person : staff_schema , session: AsyncSession = Depends(get_async_session)):
+@router.post('/')
+def add_staff(staff_person: staff_schema, request: Request, session: AsyncSession = Depends(get_async_session)):
     st = staff(
         full_name=staff_person.full_name,
         fk_department_id=staff_person.department,
         fk_post_id=staff_person.post,
     )
-    print(st)
+    print(request)
+
+    response = HTMLResponse(status_code=202, content=)
     session.add(st)
-    return 202
+    return response
