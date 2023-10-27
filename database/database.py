@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from database.models import staff
-from src.authentication.models import User
+from database.models import User
 
 DATABASE_URL = "postgresql+asyncpg://myuser:1234@localhost/site_database"
 

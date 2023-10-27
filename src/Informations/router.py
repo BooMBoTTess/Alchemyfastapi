@@ -18,15 +18,14 @@ router = APIRouter(
 async def get_staff(dep: int = 1,
                               session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
     query = select(staff)  # НАШ ЗАПРОС
-    result = await session.execute(query)  # ДОЛЖНО БЫТЬ С АВАЙТОМ ПОТОМУ ЧТО У НАС АСИНХРОННОЕ ГОВНО
-    # print(result.all())
+    print(query)
+    result = await session.execute(query)# ДОЛЖНО БЫТЬ С АВАЙТОМ ПОТОМУ ЧТО У НАС АСИНХРОННОЕ ГОВНО
+    selected_staff = result.all()
+    print(selected_staff)
 
-    return result.all()  # ВЕРНЕТ ВСЕ СТРОКИ, БЕЗ ВЕРХНЕЙ ХУЙНИ ВЫДАСТ ОШИБКУ
-@router.get('/try_github') 
-def footry():
-    return None
+    return 11  # ВЕРНЕТ ВСЕ СТРОКИ, БЕЗ ВЕРХНЕЙ ХУЙНИ ВЫДАСТ ОШИБКУ
 
-"""OCHEN VAGNAYA STROKA"""
+
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def add_staff(staff_person : staff_schema , session: AsyncSession = Depends(get_async_session)):
     st = staff(
