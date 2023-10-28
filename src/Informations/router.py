@@ -7,6 +7,8 @@ from starlette.responses import JSONResponse, HTMLResponse
 from database.database import get_async_session
 from database.models import staff, department, post
 from src.Informations.schemas import staff_schema
+from fastapi.templating import Jinja2Templates
+from config import PATH_TO_TEMPLATES
 
 router = APIRouter(
     prefix='/info',
@@ -14,25 +16,25 @@ router = APIRouter(
 )
 
 
+templates = Jinja2Templates(directory=PATH_TO_TEMPLATES)
+
+
 @router.get('/',
             # response_model=list[staff_schema]
+            response_class=HTMLResponse
             )
-async def get_dep_post(session: AsyncSession = Depends(get_async_session)):
+async def get_dep_post(request: Request, session: AsyncSession = Depends(get_async_session)):
     query = select(department)
     result = await session.execute(query)
     departments = result.scalars().all()
 
-    query = select(post)
-    result = await session.execute(query)
-    posts = result.scalars().all()
-    dep_post = [{dep_elem.id: dep_elem.name for dep_elem in departments},
-                {post_elem.id: post_elem.name for post_elem in posts}]
 
-    return dep_post
+    return templates.TemplateResponse('information.html',
+                                      context={'request': request, 'data': [departments]})
 
 
 @router.get('/{department_path}',
-            # response_model=list[staff_schema]
+            response_class=HTMLResponse
             )
 async def get_staff(department_path: int, request: Request,
                     session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
@@ -45,12 +47,14 @@ async def get_staff(department_path: int, request: Request,
     result = await session.execute(query)
     json_staff = []
     for r in result.all():
-        json_staff.append({r[0]: [r[1], r[2]]})
+        json_staff.append([r[0], r[1], r[2]])
 
-    jsresponse = JSONResponse(content=json_staff)
-    jsresponse.status_code = 202
+    return templates.TemplateResponse('information_by_dep.html',
+                                      context={'request': request,
+                                               'data': json_staff,
+                                               'department': json_staff[0][1]
+                                               })
 
-    return jsresponse
 
 
 # https://habr.com/ru/articles/513328/
@@ -84,6 +88,5 @@ def add_staff(staff_person: staff_schema, request: Request, session: AsyncSessio
     )
     print(request)
 
-    response = HTMLResponse(status_code=202, content=)
     session.add(st)
-    return response
+    return 202
