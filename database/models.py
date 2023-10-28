@@ -7,16 +7,30 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 class Base(DeclarativeBase):
     pass
 
+class department(Base):
+    __tablename__ = 'department'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(length=100))
+    def __repr__(self):
+        return f'{self.id} {self.name}'
+
+class post(Base):
+    __tablename__ = 'post'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(length=100))
+    def __repr__(self):
+        return f'{self.id}, {self.name}'
+
 class staff(Base):
     __tablename__ = 'staff'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     full_name: Mapped[str] = mapped_column(String(length=100))
-    department: Mapped[str] = mapped_column(String(length=50))
-    post: Mapped[str] = mapped_column(String(length=50))
+    fk_department_id: Mapped[int] = mapped_column(Integer, ForeignKey('department.id'))
+    fk_post_id: Mapped[int] = mapped_column(Integer, ForeignKey('post.id'))
+    def __repr__(self):
+        return f'{self.id} {self.full_name} {self.fk_department_id} {self.fk_post_id}'
 
-    def __repr__(self) -> str:
-        return f"User(id={self.id!r},name={self.full_name!r})"
 
 class User(SQLAlchemyBaseUserTable[int], Base):
     __tablename__ = 'User'

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+     <b>{{department}}</b>
+
+
+    <ol>
+        {% for data_elem in data %}
+        <li>{{ data_elem[0] }} - {{ data_elem[2] }} </li>
+        {% endfor %}
+    </ol>
+</body>
+</html>
