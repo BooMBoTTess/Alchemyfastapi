@@ -30,27 +30,34 @@ async def get_dep_post(request: Request, session: AsyncSession = Depends(get_asy
     return response
 
 
-@router.get('/{department_path}',
-            response_class=HTMLResponse
-            )
+@router.get('/{department_path}')
 async def get_staff(department_path: int, request: Request,
-                    session: AsyncSession = Depends(get_async_session)):  # ТУТ НУЖНО ВЗЯТЬ НАШУ ЕБУЧУЮ СЕССИЮ
-    print('req', request.headers)
-    query = ((select(staff.full_name, department.name, post.name)
+                    session: AsyncSession = Depends(get_async_session)):
+    query = ((select(staff.full_name, department.name, post.name, department.id)
               .join(department).filter(staff.fk_department_id == department.id)
               .join(post).filter(staff.fk_post_id == post.id))
-             .where(department.id == department_path)
              .order_by(department.id).order_by(post.id))
     result = await session.execute(query)
     json_staff = []
-    for r in result.all():
-        json_staff.append([r[0], r[1], r[2]])
+    result = result.all()
+    for r in result:
+        if result[4] == department_path:
+            json_staff.append([r[0], r[1], r[2]])
 
-    return templates.TemplateResponse('information_by_dep.html',
-                                      context={'request': request,
-                                               'data': json_staff,
-                                               'department': json_staff[0][1]
-                                               })
+    if json_staff == []:
+        return templates.TemplateResponse('information_by_dep.html',
+                                          context={'request': request,
+                                                   'data': json_staff,
+                                                   'department': 'Отсуствует'
+                                                   },
+                                          status_code=204)
+    else:
+        return templates.TemplateResponse('information_by_dep.html',
+                                          context={'request': request,
+                                                   'data': json_staff,
+                                                   'department': json_staff[0][1]
+                                                   },
+                                          status_code=200)
 
 
 
