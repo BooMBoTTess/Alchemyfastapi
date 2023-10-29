@@ -55,7 +55,7 @@ async def get_staff(department_path: int, request: Request,
 
 
 # https://habr.com/ru/articles/513328/
-@router.get('/test'
+@router.get('/tests'
             # response_model=list[staff_schema],
             )  # ЭТА ХУЙНЯ НУЖНА ЧТОБЫ ОН ПОНЯЛ КАК ОТПРАВИТЬ
 async def get_staff_test(department_path: int, post_path: int,
