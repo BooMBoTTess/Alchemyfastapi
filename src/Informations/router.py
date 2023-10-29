@@ -19,18 +19,15 @@ router = APIRouter(
 templates = Jinja2Templates(directory=PATH_TO_TEMPLATES)
 
 
-@router.get('/',
-            # response_model=list[staff_schema]
-            response_class=HTMLResponse
-            )
+@router.get('/')
 async def get_dep_post(request: Request, session: AsyncSession = Depends(get_async_session)):
     query = select(department)
     result = await session.execute(query)
     departments = result.scalars().all()
 
-
-    return templates.TemplateResponse('information.html',
-                                      context={'request': request, 'data': [departments]})
+    response = templates.TemplateResponse('information.html', status_code=202,
+                                      context= {'request': request, 'data': [departments]})
+    return response
 
 
 @router.get('/{department_path}',

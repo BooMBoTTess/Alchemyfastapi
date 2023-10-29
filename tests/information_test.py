@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
+from pytest import fixture
+from src.uapp import app
 
-from src.main import app
 client = TestClient(app)
+
 
 def test_read_departments():
     response = client.get('/info')
