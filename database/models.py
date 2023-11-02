@@ -33,7 +33,7 @@ class staff(Base):
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
-    __tablename__ = 'User'
+    __tablename__ = 'Authentication'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String(length=320), unique=True, index=True, nullable=False)
