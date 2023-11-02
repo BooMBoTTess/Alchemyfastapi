@@ -6,7 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-config.py
 # Distribution / packaging
 .Python
 build/
@@ -37,7 +36,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit tests / coverage reports
 htmlcov/
 .tox/
 .nox/
