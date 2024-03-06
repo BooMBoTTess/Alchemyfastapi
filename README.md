@@ -1,6 +1,5 @@
 # Alchemyfastapi
-I wanna cry
-I wanna die)
+I wanna cry)
 
 # Полезные комманды
 uvicorn main:app --reload <br>
